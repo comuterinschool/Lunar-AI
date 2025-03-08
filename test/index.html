@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar AI Chat</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #000000;
+            font-family: Helvetica, Arial, sans-serif;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 375px;
+            height: 375px;
+        }
+
+        .brand-name {
+            font-size: 48px;
+            font-weight: bold;
+            color: #B765EE;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(183, 101, 238, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(183, 101, 238, 0.2);
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: rgba(178, 223, 247, 0.1);
+            border-radius: 8px;
+        }
+
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            background-color: rgba(183, 101, 238, 0.2);
+            margin-left: 20%;
+        }
+
+        .ai-message {
+            background-color: rgba(178, 223, 247, 0.2);
+            margin-right: 20%;
+        }
+
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        textarea {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #B765EE;
+            background-color: rgba(178, 223, 247, 0.1);
+            color: white;
+            resize: vertical;
+            min-height: 50px;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .send-button {
+            background-color: #B765EE;
+            color: white;
+        }
+
+        .back-button {
+            background-color: #B2DFF7;
+            color: black;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #B765EE;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="/api/placeholder/375/375" alt="Lunar AI Logo" class="logo">
+        <div class="brand-name">Lunar AI</div>
+    </div>
+
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="loading" id="loadingIndicator">Thinking...</div>
+        <div class="input-container">
+            <textarea id="userInput" placeholder="Type your message here..."></textarea>
+            <button class="send-button" id="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <button class="back-button" onclick="window.location.href='lunar.comuter.at/ai-selection'">Back</button>
+
+    <script>
+        const systemPrompt = "You are Lunar AI, a helpful and friendly AI assistant."; // Customize this
+        const API_URL = 'https://api.procreations.com/pro-ai/chat'; // Replace with actual API endpoint
+
+        let isProcessing = false;
+
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const sendButton = document.getElementById('sendButton');
+            
+            if (!userInput.value.trim() || isProcessing) return;
+
+            isProcessing = true;
+            sendButton.disabled = true;
+            loadingIndicator.style.display = 'block';
+
+            // Add user message to chat
+            const userMessageDiv = document.createElement('div');
+            userMessageDiv.className = 'message user-message';
+            userMessageDiv.textContent = userInput.value;
+            chatMessages.appendChild(userMessageDiv);
+
+            // Prepare API request
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        input: userInput.value,
+                        system: systemPrompt
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                // Add AI response to chat
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai-message';
+                aiMessageDiv.textContent = data.response;
+                chatMessages.appendChild(aiMessageDiv);
+
+            } catch (error) {
+                // Handle error
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message ai-message';
+                errorDiv.textContent = 'Sorry, there was an error processing your request. Please try again.';
+                chatMessages.appendChild(errorDiv);
+                console.error('Error:', error);
+            } finally {
+                isProcessing = false;
+                sendButton.disabled = false;
+                loadingIndicator.style.display = 'none';
+                userInput.value = '';
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Allow sending message with Enter key
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Disable send button while processing
+        function updateSendButton() {
+            const userInput = document.getElementById('userInput');
+            const sendButton = document.getElementById('sendButton');
+            sendButton.disabled = isProcessing || !userInput.value.trim();
+        }
+
+        document.getElementById('userInput').addEventListener('input', updateSendButton);
+    </script>
+</body>
+</html>
