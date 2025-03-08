@@ -137,7 +137,6 @@
     <button class="back-button" onclick="window.location.href='lunar.comuter.at/ai-selection'">Back</button>
 
     <script>
-        const systemPrompt = "You are Lunar AI, a helpful and friendly AI assistant."; // Customize this
         const API_URL = 'https://api.procreations.com/pro-ai/chat'; // Replace with actual API endpoint
 
         let isProcessing = false;
@@ -168,28 +167,32 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        input: userInput.value,
-                        system: systemPrompt
+                        input: userInput.value
                     })
                 });
 
                 const data = await response.json();
 
+                // Check if there's an error field in the response
                 if (data.error) {
-                    throw new Error(data.error);
+                    // Display the error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'message ai-message';
+                    errorDiv.textContent = data.error;
+                    chatMessages.appendChild(errorDiv);
+                } else if (data.response) {
+                    // Add AI response to chat
+                    const aiMessageDiv = document.createElement('div');
+                    aiMessageDiv.className = 'message ai-message';
+                    aiMessageDiv.textContent = data.response;
+                    chatMessages.appendChild(aiMessageDiv);
                 }
 
-                // Add AI response to chat
-                const aiMessageDiv = document.createElement('div');
-                aiMessageDiv.className = 'message ai-message';
-                aiMessageDiv.textContent = data.response;
-                chatMessages.appendChild(aiMessageDiv);
-
             } catch (error) {
-                // Handle error
+                // Handle exception (like network error)
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'message ai-message';
-                errorDiv.textContent = 'Sorry, there was an error processing your request. Please try again.';
+                errorDiv.textContent = 'A network error occurred. Please check your connection and try again.';
                 chatMessages.appendChild(errorDiv);
                 console.error('Error:', error);
             } finally {
