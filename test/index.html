@@ -27,6 +27,7 @@
         .logo {
             width: 375px;
             height: 375px;
+            object-fit: contain;
         }
 
         .brand-name {
@@ -134,10 +135,11 @@
         </div>
     </div>
 
-    <button class="back-button" onclick="window.location.href='lunar.comuter.at/ai-selection'">Back</button>
+    <button class="back-button" onclick="window.location.href='https://lunar.comuter.at/ai-selection'">Back</button>
 
     <script>
-        const API_URL = 'https://api.procreations.com/pro-ai/chat'; // Replace with actual API endpoint
+        // Using the correct API URL
+        const API_URL = 'https://pro-ai.glitch.me/api-pro-chat/'; // Using relative path for same-origin API
 
         let isProcessing = false;
 
@@ -158,6 +160,22 @@
             userMessageDiv.className = 'message user-message';
             userMessageDiv.textContent = userInput.value;
             chatMessages.appendChild(userMessageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            const userMessage = userInput.value.trim();
+            userInput.value = '';
+
+            // Create a mock response for testing (remove in production)
+            function mockResponse() {
+                const aiMessageDiv = document.createElement('div');
+                aiMessageDiv.className = 'message ai-message';
+                aiMessageDiv.textContent = "I'm Lunar AI. How can I assist you today?";
+                chatMessages.appendChild(aiMessageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                isProcessing = false;
+                sendButton.disabled = false;
+                loadingIndicator.style.display = 'none';
+            }
 
             // Prepare API request
             try {
@@ -167,9 +185,14 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        input: userInput.value
+                        input: userMessage
                     })
                 });
+                
+                // Check if response is ok
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
 
                 const data = await response.json();
 
@@ -186,20 +209,27 @@
                     aiMessageDiv.className = 'message ai-message';
                     aiMessageDiv.textContent = data.response;
                     chatMessages.appendChild(aiMessageDiv);
+                } else {
+                    // If no response or error field found
+                    throw new Error('Invalid response format');
                 }
 
             } catch (error) {
+                console.error('Error:', error);
+                
+                // Uncomment for testing without API
+                // mockResponse();
+                // return;
+                
                 // Handle exception (like network error)
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'message ai-message';
-                errorDiv.textContent = 'A network error occurred. Please check your connection and try again.';
+                errorDiv.textContent = 'Unable to connect to Lunar AI at the moment. Please try again later.';
                 chatMessages.appendChild(errorDiv);
-                console.error('Error:', error);
             } finally {
                 isProcessing = false;
                 sendButton.disabled = false;
                 loadingIndicator.style.display = 'none';
-                userInput.value = '';
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         }
@@ -220,6 +250,15 @@
         }
 
         document.getElementById('userInput').addEventListener('input', updateSendButton);
+        
+        // Add initial welcome message
+        window.addEventListener('DOMContentLoaded', () => {
+            const chatMessages = document.getElementById('chatMessages');
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.className = 'message ai-message';
+            welcomeDiv.textContent = 'Welcome to Lunar AI! How can I assist you today?';
+            chatMessages.appendChild(welcomeDiv);
+        });
     </script>
 </body>
 </html>
