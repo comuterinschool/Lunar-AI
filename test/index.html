@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lunar AI Chat</title>
+    <title>LunarAI</title>
     <style>
         body {
             margin: 0;
@@ -139,7 +139,7 @@
 
     <script>
         // API URL - You can update this to your specific endpoint
-        const API_URL = 'https://pro-ai.glitch.me/api-pro-chat/';
+        const API_URL = 'pro-ai.glitch.me/api-pro-chat';
 
         let isProcessing = false;
 
@@ -176,7 +176,7 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        input: userMessage
+                        input: input
                     })
                 });
                 
