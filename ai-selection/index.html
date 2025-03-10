@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Your LunarAI Model</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #000000; /* Black background from LunarAI */
+            font-family: Helvetica, Arial, sans-serif;
+            color: #ffffff; /* White text */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #B765EE; /* LunarAI purple for the title */
+            margin-bottom: 40px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .chatbot-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 1200px; /* Slightly wider to accommodate three cards */
+        }
+
+        .chatbot-card {
+            background-color: rgba(183, 101, 238, 0.1); /* LunarAI card background (purple tint) */
+            border: 2px solid #B765EE; /* Purple border */
+            border-radius: 10px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(183, 101, 238, 0.2); /* LunarAI shadow */
+            transition: transform 0.2s;
+        }
+
+        .chatbot-card:hover {
+            transform: translateY(-5px); /* Hover lift effect */
+        }
+
+        .chatbot-card h2 {
+            font-size: 1.5em;
+            color: #B765EE; /* Purple for the card title */
+            margin-bottom: 10px;
+        }
+
+        .chatbot-card p {
+            font-size: 1em;
+            color: #ffffff; /* White text for description */
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .chatbot-card button {
+            background-color: #B765EE; /* LunarAI purple button */
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: white;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .chatbot-card button:hover {
+            opacity: 0.8; /* LunarAI hover effect */
+        }
+
+        /* Styles for locked card */
+        .locked {
+            opacity: 0.5; /* Gray out the card */
+            filter: grayscale(100%); /* Additional gray effect */
+            pointer-events: none; /* Disable interactions */
+        }
+
+        .locked button {
+            background-color: #666; /* Grayed-out button */
+            cursor: not-allowed; /* Change cursor to indicate locked */
+        }
+
+        .locked .locked-label {
+            font-size: 0.9em;
+            color: #ccc; /* Lighter text for locked label */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Choose Your LunarAI Model</h1>
+    <div class="chatbot-container">
+        <div class="chatbot-card locked">
+            <h2>Classic LunarAI</h2>
+            <p>The classic LunarAI experience. Model LunarAI-1</p>
+            <button disabled>Start Chat</button>
+            <div class="locked-label">Locked</div>
+        </div>
+        <div class="chatbot-card">
+            <h2>Experimental Preview</h2>
+            <p>Experimental review currently runs on LunarAI-1e1. Try the newest features early.</p>
+            <button onclick="window.location.href='/chat/preview.html'">Start Chat</button>
+        </div>
+    </div>
+</body>
+</html>
