@@ -207,7 +207,7 @@
 
             try {
                 // Add your system prompt in front of the user's input
-                const systemPrompt = "Your name is now LunarAI. Your current model is LunarAI-1. Please format your response using Markdown. User prompt:";
+                const systemPrompt = "Your name is now LunarAI. Your current model is LunarAI-1. You can use markdown, but no math formatting. User prompt:";
                 const modifiedInput = systemPrompt + userMessage;
 
                 // Encode and send the modified input to the API
@@ -270,7 +270,7 @@
             const chatMessages = document.getElementById('chatMessages');
             const welcomeDiv = document.createElement('div');
             welcomeDiv.className = 'message ai-message';
-            const welcomeMessage = 'Model: **LunarAI-1e**, modified version of GPT. LunarAI runs on [Pollinations](https://pollinations.ai/).';
+            const welcomeMessage = 'Model: **LunarAI-1e2**, modified version of GPT. LunarAI runs on [Pollinations](https://pollinations.ai/).';
             welcomeDiv.innerHTML = marked.parse(welcomeMessage); // Parse Markdown for welcome message
             chatMessages.appendChild(welcomeDiv);
         });
