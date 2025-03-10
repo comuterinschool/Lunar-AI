@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LunarAI</title>
+    <!-- Add marked.js library for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -69,6 +71,47 @@
         .ai-message {
             background-color: rgba(178, 223, 247, 0.2);
             margin-right: 20%;
+        }
+
+        /* Additional styles for Markdown formatting */
+        .ai-message a {
+            color: #B765EE;
+            text-decoration: underline;
+        }
+
+        .ai-message a:hover {
+            opacity: 0.8;
+        }
+
+        .ai-message ul, .ai-message ol {
+            margin: 10px 0 10px 20px;
+            padding-left: 20px;
+        }
+
+        .ai-message li {
+            margin: 5px 0;
+        }
+
+        .ai-message strong {
+            font-weight: bold;
+        }
+
+        .ai-message em {
+            font-style: italic;
+        }
+
+        .ai-message code {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .ai-message pre {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
         }
 
         .input-container {
@@ -164,7 +207,7 @@
 
             try {
                 // Add your system prompt in front of the user's input
-                const systemPrompt = "Your name is now LunarAI. Your current model is LunarAI-1. User prompt:";
+                const systemPrompt = "Your name is now LunarAI. Your current model is LunarAI-1. Please format your response using Markdown. User prompt:";
                 const modifiedInput = systemPrompt + userMessage;
 
                 // Encode and send the modified input to the API
@@ -189,10 +232,13 @@
                 const textResponse = await response.text();
                 console.log("Response text:", textResponse);
 
-                // Add AI response to chat (unchanged from API)
+                // Parse Markdown response to HTML using marked.js
+                const markdownResponse = marked.parse(textResponse || 'No response from AI');
+
+                // Add AI response to chat with Markdown formatting
                 const aiMessageDiv = document.createElement('div');
                 aiMessageDiv.className = 'message ai-message';
-                aiMessageDiv.textContent = textResponse || 'No response from AI';
+                aiMessageDiv.innerHTML = markdownResponse; // Use innerHTML to render the parsed HTML
                 
                 chatMessages.appendChild(aiMessageDiv);
 
@@ -219,12 +265,13 @@
             }
         });
         
-        // Add initial welcome message
+        // Add initial welcome message with Markdown
         window.addEventListener('DOMContentLoaded', () => {
             const chatMessages = document.getElementById('chatMessages');
             const welcomeDiv = document.createElement('div');
             welcomeDiv.className = 'message ai-message';
-            welcomeDiv.textContent = 'Model: LunarAI-1e, modified version of GPT. LunarAI runs on Pollinations (https://pollinations.ai/)';
+            const welcomeMessage = 'Model: **LunarAI-1e**, modified version of GPT. LunarAI runs on [Pollinations](https://pollinations.ai/).';
+            welcomeDiv.innerHTML = marked.parse(welcomeMessage); // Parse Markdown for welcome message
             chatMessages.appendChild(welcomeDiv);
         });
     </script>
