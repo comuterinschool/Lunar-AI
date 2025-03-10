@@ -135,12 +135,9 @@
         </div>
     </div>
 
-    <button class="back-button" onclick="window.location.href='https://lunar.comuter.at/ai-selection'">Back</button>
+    <button class="back-button" onclick="window.location.href='/'">Back</button>
 
     <script>
-        // API URL - You can update this to your specific endpoint
-        const API_URL = 'pro-ai.glitch.me/api-pro-chat';
-
         let isProcessing = false;
 
         async function sendMessage() {
@@ -166,58 +163,32 @@
             userInput.value = '';
 
             try {
+                // URL-encode the user input and construct the API URL
+                const encodedInput = encodeURIComponent(userMessage);
+                const API_URL = `https://text.pollinations.ai/${encodedInput}`;
+                
                 console.log("Sending request to:", API_URL);
-                console.log("Request payload:", JSON.stringify({ input: userMessage }));
                 
                 const response = await fetch(API_URL, {
-                    method: 'POST',
+                    method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        input: userMessage
-                    })
+                        'Accept': 'text/plain' // Adjust if the API returns JSON or another format
+                    }
                 });
                 
                 console.log("Response status:", response.status);
                 
-                // Check if response is ok
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
 
-                const contentType = response.headers.get("content-type");
-                console.log("Response content type:", contentType);
-                
-                let data;
-                if (contentType && contentType.includes("application/json")) {
-                    data = await response.json();
-                    console.log("Response data:", data);
-                } else {
-                    const textResponse = await response.text();
-                    console.log("Text response:", textResponse);
-                    try {
-                        data = JSON.parse(textResponse);
-                    } catch (e) {
-                        data = { response: textResponse };
-                    }
-                }
+                const textResponse = await response.text();
+                console.log("Response text:", textResponse);
 
                 // Add AI response to chat
                 const aiMessageDiv = document.createElement('div');
                 aiMessageDiv.className = 'message ai-message';
-                
-                // Check how to extract the response from the data
-                if (data.error) {
-                    aiMessageDiv.textContent = data.error;
-                } else if (data.response) {
-                    aiMessageDiv.textContent = data.response;
-                } else if (typeof data === 'string') {
-                    aiMessageDiv.textContent = data;
-                } else {
-                    aiMessageDiv.textContent = JSON.stringify(data);
-                }
+                aiMessageDiv.textContent = textResponse || 'No response from AI';
                 
                 chatMessages.appendChild(aiMessageDiv);
 
@@ -227,7 +198,7 @@
                 // Fall back to a local response when API fails
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'message ai-message';
-                errorDiv.textContent = 'Unable to connect to Lunar AI at the moment. Please try again later. (Error: ' + error.message + ')';
+                errorDiv.textContent = `Unable to connect to the AI at the moment. Please try again later. (Error: ${error.message})`;
                 chatMessages.appendChild(errorDiv);
             } finally {
                 isProcessing = false;
